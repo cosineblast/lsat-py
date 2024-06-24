@@ -17,11 +17,16 @@ class FormulaBuilder:
     def add_formula(self, input_formula):
         match input_formula:
             case ("Negation", formula):
-                target_variable = self.add_formula(formula)
+                t = self.add_formula(formula)
 
                 y = self._add_variable()
 
-                self._add_equation(("eq", y, minus(1, target_variable)))
+                """
+                y = 1 - t
+                y + t = 1
+                """
+
+                self._add_equation(('eq', [y, t], [1, 1], 1))
 
                 return y
 
@@ -34,14 +39,37 @@ class FormulaBuilder:
 
                 y = self._add_variable()
                 beta = self._add_variable()
-                s = self._add_variable()
+
+                """
+                `s - β ≤ y ≤ s`
+
+                s - β ≤ y →
+                s - β - y ≤ 0 →
+                a + b - β - y ≤ 0 →
+                [a, b, β, y] ∙ [1, 1, -1, -1] ≤ 0
+
+                y ≤ s →
+                y ≤ a + b →
+                y - a - b ≤ 0
+                [y, a, b] ∙ [1, -1, -1] ≤ 0
+                -}
+
+                {-
+                `β ≤ y ≤ 1`
+
+                β ≤ y →
+                β - y ≤  0 →
+                [β, y] ∙ [1,-1] ≤ 0
+
+                y ≤ 1 →
+                [y] ∙ [1] ≤ 1
+                """
 
                 equations = [
-                    ("eq", s, plus(a, b)),
-                    ("le", minus(s, beta), y),
-                    ("le", y, s),
-                    ("le", beta, y),
-                    ("le", y, 1),
+                    ('le', [a,b,beta,y], [1,1,-1,-1], 0),
+                    ('le', [y,a,b], [1,-1,-1], 0),
+                    ('le', [beta, y], [1, -1], 0),
+                    ('le', [y], [1], 1)
                 ]
 
                 for equation in equations:
@@ -55,14 +83,40 @@ class FormulaBuilder:
 
                 y = self._add_variable()
                 beta = self._add_variable()
-                d = self._add_variable()
+
+                """
+                Conjunction
+
+                1. `d ≤ y ≤ d + β`
+                d ≤ y →
+                d - y ≤ 0 →
+                a+b-1-y ≤ 0
+                a + b - y ≤ 1
+                [a, b, y] ∙ [1, 1, -1] ≤ 1
+
+                y ≤ d + β →
+                y - d - β ≤ 0
+                y - (a + b - 1) - β ≤ 0
+                y - a - b + 1 - β ≤ 0
+                y - a - b - β ≤ -1
+                [y, a, b, β] ∙ [1, -1, -1, -1] ≤ -1
+
+                2. `0 ≤ y ≤ 1 - β`
+
+                0 ≤ y →
+                - y ≤ 0 →
+                [y] ∙ [-1] ≤  0
+
+                y ≤ 1 - β →
+                y + β ≤ 1
+                [y,β] ∙ [1,1] ≤ 1
+                """
 
                 equations = [
-                    ("eq", d, minus(plus(a, b), 1)),
-                    ("le", d, y),
-                    ("le", y, plus(d, beta)),
-                    ("le", 0, y),
-                    ("le", y, minus(1, beta)),
+                    ('le',[a,b,y], [1,1,-1],  1),
+                    ('le',[y,a,b,beta], [1,-1,-1,-1],  -1),
+                    ('le',[y], [-1],  0),
+                    ('le',[y, beta], [1,1],  1)
                 ]
 
                 for equation in equations:
@@ -77,11 +131,33 @@ class FormulaBuilder:
                 y = self._add_variable()
                 beta = self._add_variable()
 
+                """
+                1. `a ≤ y ≤ a + β`
+                a ≤ y →
+                a - y ≤ 0 →
+                [a, y] ∙ [1, -1] ≤ 0
+
+                y ≤ a + β
+                y - a - β ≤ 0
+                [y,a,β] ∙ [1,-1,-1] ≤ 0
+
+
+                2. `b ≤ y ≤ b + (1 - β)`
+
+                b ≤ y
+                b - y ≤ 0
+                [b, y] ∙ [1,-1] ≤ 0
+
+                y ≤ b + (1 - β)
+                y - b + β ≤ 1
+                [y,b,β] ∙ [1,-1,1] ≤ 1
+                """
+
                 equations = [
-                    ("le", a, y),
-                    ("le", y, plus(a, beta)),
-                    ("le", b, y),
-                    ("le", y, plus(b, minus(1, beta))),
+                    ('le',[a,y], [1,-1],  0),
+                    ('le',[y,a,beta], [1,-1,-1],  0),
+                    ('le',[b,y], [1,-1],  0),
+                    ('le',[y,b,beta], [1,-1,1],  1)
                 ]
 
                 for equation in equations:
@@ -96,11 +172,38 @@ class FormulaBuilder:
                 y = self._add_variable()
                 beta = self._add_variable()
 
+                """
+                Min
+
+                1. `a - β ≤ y ≤ a`
+                a - β ≤ y
+                a - β - y ≤ 0
+                [a, β, y] ∙ [1, -1, -1] ≤ 0
+
+                y ≤ a
+                y - a ≤ 0
+                [y,a] ∙ [1,-1] ≤ 0
+
+
+                2. `b - (1 - β) ≤ y ≤ b`
+                b - (1 - β) ≤ y
+                b - (1 - β) - y ≤ 0
+                b - 1 + β - y ≤ 0
+                b + β - y ≤ 1
+
+                [b, β, y] ∙ [1,1,-1] ≤ 1
+
+                y ≤ b
+                y - b ≤ 0
+                [y,b] ∙ [1, -1] ≤ 0
+                """
+
+
                 equations = [
-                    ("le", minus(a, beta), y),
-                    ("le", y, a),
-                    ("le", minus(b, minus(1, beta)), y),
-                    ("le", y, b),
+                    ('le',[a, beta, y], [1, -1, -1],  0),
+                    ('le',[y, a], [1, -1],  0),
+                    ('le',[b, beta, y], [1, 1, -1],  1),
+                    ('le',[y, b], [1, -1],  0)
                 ]
 
                 for equation in equations:
@@ -114,7 +217,7 @@ class FormulaBuilder:
 
         result = self.add_formula(formula)
 
-        self._add_equation((operator, result, value))
+        self._add_equation((operator, [result], [1], value))
 
     def _add_equation(self, equation):
         self._equations.append(equation)
