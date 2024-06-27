@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 RelationLiteral = Literal['eq', 'le', 'ge']
 
-Equation = Tuple[RelationLiteral, list[str], list[float], float]
+Constraint = Tuple[RelationLiteral, list[str], list[float], float]
 
 @dataclass
 class Atomic:
@@ -41,4 +41,4 @@ class Implication:
 
 Formula = Atomic | Negation | Conjunction | Disjunction | Min | Max | Implication
 
-FormulaAssignment = Tuple[RelationLiteral, Formula, float]
+FormulaConstraint = Tuple[RelationLiteral, Formula, float]
