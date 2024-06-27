@@ -1,5 +1,7 @@
 
-def disjunction_equations(a, b, beta, y):
+from the_types import *
+
+def disjunction_equations(a: str, b: str, beta: str, y: str) -> list[Equation]:
     """
     Disjunction
 
@@ -35,7 +37,7 @@ def disjunction_equations(a, b, beta, y):
     ]
 
 
-def conjunction_equations(a, b, beta, y):
+def conjunction_equations(a: str, b: str, beta: str, y: str) -> list[Equation]:
     """
     Conjunction
 
@@ -72,7 +74,7 @@ def conjunction_equations(a, b, beta, y):
     ]
 
 
-def max_equations(a, b, beta, y):
+def max_equations(a: str, b: str, beta: str, y: str) -> list[Equation]:
     """
     Max
 
@@ -104,7 +106,7 @@ def max_equations(a, b, beta, y):
         ('le',[y,b,beta], [1,-1,1],  1)
     ]
 
-def min_equations(a, b, beta, y):
+def min_equations(a: str, b: str, beta: str, y: str) -> list[Equation]:
     """
     Min
 
@@ -139,7 +141,7 @@ def min_equations(a, b, beta, y):
         ('le',[y, b], [1, -1],  0)
     ]
 
-def implication_equations(a, b, beta, y):
+def implication_equations(a: str, b: str, beta: str, y: str) -> list[Equation]:
     """
     Implication
 
