@@ -5,9 +5,13 @@ from the_types import *
 
 import equations
 
+from typing import TypedDict, NamedTuple
+
 
 class FormulaBuilder:
     _equations: list[Equation] = []
+    _float_vars: set[str] = set()
+    _binary_vars: set[str] = set()
     _var_counter: int = 0
 
     def add_formula(self, input_formula: Formula):
@@ -77,19 +81,30 @@ class FormulaBuilder:
 
 
     def _add_binary_variable(self, name = None):
-        return self._add_variable("b_{}".format(self._inc_counter()))
+        result = name if name is not None else "b_{}".format(self._inc_counter())
+        self._binary_vars.add(result)
+        return result
 
     def _add_variable(self, name = None):
-        return name if name is not None else "x_{}".format(self._inc_counter())
+        result = name if name is not None else "x_{}".format(self._inc_counter())
+        self._float_vars.add(result)
+        return result
+
+class MixedProblem(NamedTuple):
+    constraints: list[Equation]
+    float_variables: set[str]
+    binary_variables: set[str]
 
 
-def build_equations(assignments: list[FormulaAssignment]) -> list[Equation]:
+def build_equations(assignments: list[FormulaAssignment]) -> MixedProblem:
     builder = FormulaBuilder()
 
     for assignment in assignments:
         builder.add_formula_assignment(assignment)
 
-    return builder._equations
+    return MixedProblem(constraints = builder._equations,
+                        float_variables = builder._float_vars,
+                        binary_variables = builder._binary_vars)
 
 
 def main():
@@ -106,9 +121,16 @@ def main():
         ("ge", p0, 0.3),
     ]
 
-    equations = build_equations(things)
+    equations, fvars, bvars = build_equations(things)
 
+    print('Equations:')
     print(equations)
 
+    print('Float Vars:')
+    print(fvars)
+
+    print('Binary Vars:')
+    print(bvars)
+    print(fvars)
 if __name__ == '__main__':
     main()
