@@ -210,6 +210,56 @@ class FormulaBuilder:
                     self._add_equation(equation)
 
                 return y
+
+            case ('Implication', left, right):
+                a = self.add_formula(left)
+                b = self.add_formula(right)
+
+                y = self._add_variable()
+                beta = self._add_variable()
+
+                """
+                Implication
+
+                1. s - β ≤ y ≤ s
+                s = 1 + b - a
+
+                s - β ≤ y
+                1 + b - a - β ≤ y
+                1 + b - a - β - y ≤ 0
+                b - a - β - y ≤ -1
+
+                [b,a,β,y] ∙ [1,-1,-1,-1] ≤ -1
+
+                y ≤ s
+                y ≤ 1 + b - a
+                y - b + a ≤ 1
+                [y,b,a] ∙ [1,-1,1] ≤ 1
+
+                2. β ≤ y ≤ 1
+
+                β ≤ y
+                β - y ≤ 0
+                [β, y] ∙ [1, -1] ≤ 0
+
+                y ≤ 1
+                [y] ∙ [1] ≤ 1
+                """
+
+                equations = [
+                    ('le',[b,a,beta,y], [1,-1,-1,-1],  -1),
+                    ('le',[y,b,a], [1,-1,1],  1),
+                    ('le',[beta,y], [1,-1],  0),
+                    ('le',[y], [1],  1)
+                ]
+
+                for equation in equations:
+                    self._add_equation(equation)
+
+                return y
+
+
+
         raise ValueError('Unknown formula: {}'.format(input_formula))
 
     def add_formula_assignment(self, formula_assignment):
@@ -251,6 +301,7 @@ def main():
         ("ge", ("Conjunction", p0, p1), 0.3),
         ("le", ("Max", p1, p2), 0.3),
         ("ge", ("Min", p1, ('Conjunction', p1, p2)), 0.8),
+        ("eq", ("Implication", p0, p2), 1.0),
         ("ge", p0, 0.3),
     ]
 

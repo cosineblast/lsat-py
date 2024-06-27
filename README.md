@@ -78,3 +78,12 @@ e a equação 2 garante que `b ≤ y`, logo `y = max(a, b)`.
 Quando β é 1, a equação 2 garante que `y = b`,
 e a equação 1 garane que `a ≤ y`, assim `y = max(a, b)`.
 
+## Implicação
+
+O valor de `v(φ → ψ)` é `min(1, 1 + v(ψ) - v(φ)`.
+
+Assim, sendo `s = 1 + v(ψ) - v(φ)`, podemos usar
+as mesmas equações da disjunção, com este valor `s`.
+
+1. `s - β ≤ y ≤ s`
+2. `β ≤ y ≤ 1`
