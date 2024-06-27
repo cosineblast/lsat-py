@@ -19,7 +19,7 @@ class FormulaBuilder:
             b = self.add_formula(right)
 
             y = self._add_variable()
-            beta = self._add_variable()
+            beta = self._add_binary_variable()
 
             equations = fn(a,b,beta,y)
 
@@ -73,13 +73,17 @@ class FormulaBuilder:
     def _add_equation(self, equation):
         self._equations.append(equation)
 
+    def _inc_counter(self):
+        current = self._var_counter
+        self._var_counter += 1
+        return current
+
+
+    def _add_binary_variable(self, name = None):
+        return self._add_variable("b_{}".format(self._inc_counter()))
+
     def _add_variable(self, name = None):
-        if name is None:
-            current = self._var_counter
-            self._var_counter += 1
-            return "x_{}".format(current)
-        else:
-            return name
+        return name if name is not None else "x_{}".format(self._inc_counter())
 
 
 
