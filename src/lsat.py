@@ -50,7 +50,7 @@ def solve(problem: MixedProblem):
 
 
 
-def main():
+def example():
     p0 = Atomic("p0")
     p1 = Atomic("p1")
 
@@ -77,6 +77,9 @@ def main():
     print('Solution:')
     solve(problem)
 
+
+def main():
+    example()
 
 if __name__ == '__main__':
     main()
