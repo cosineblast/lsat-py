@@ -1,6 +1,7 @@
 
-from typing import Tuple, Literal
+from typing import Tuple, Literal, Optional
 from dataclasses import dataclass
+from typing import NamedTuple
 
 RelationLiteral = Literal['eq', 'le', 'ge']
 
@@ -42,3 +43,9 @@ class Implication:
 Formula = Atomic | Negation | Conjunction | Disjunction | Min | Max | Implication
 
 FormulaConstraint = Tuple[RelationLiteral, Formula, float]
+
+class MixedProblem(NamedTuple):
+    constraints: list[Constraint]
+    float_variables: set[str]
+    binary_variables: set[str]
+

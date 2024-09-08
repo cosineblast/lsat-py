@@ -3,54 +3,29 @@ from rich import print
 
 from the_types import *
 
-from constraint_builder import MixedProblem, build_constraints
+from constraint_builder import build_constraints
 
-from pyscipopt import Model
 
 import test_util
 
-def solve(problem: MixedProblem):
-    solver = Model('Example')
+import solver
 
-    solver.hideOutput()
+def example1():
 
-    solver_vars = dict()
+    p0 = Atomic("p0")
+    p1 = Atomic("p1")
 
-    for name in problem.float_variables:
-        variable = solver.addVar(name)
-        solver_vars[name] = variable
-        solver.addCons(0.0 <= variable)
-        solver.addCons(variable <= 1.0)
+    things: list[FormulaConstraint] = [
+        ("le", Min(p0, p1), 0.3),
+        ("ge", Max(p0, p1), 0.6),
+        ("eq", p0, 0.7),
+        ("eq", p1, 0.1),
+    ]
 
-    for name in problem.binary_variables:
-        solver_vars[name] = solver.addVar(name, vtype='B')
+    print(solver.solve_formula_constraints(things))
+    
 
-
-    for relation, variables, values, constant in problem.constraints:
-
-        left_side = 0
-
-        for variable, value in zip(variables, values):
-            left_side = (solver_vars[variable] * value) + left_side
-
-        match relation:
-            case 'eq': constraint = left_side == constant
-            case 'le': constraint = left_side <= constant
-            case 'ge': constraint = left_side >= constant
-
-        solver.addCons(constraint)
-
-    solver.optimize()
-
-    print('status:', solver.getStatus())
-
-    if solver.getStatus() == 'optimal':
-        for v in solver.getVars():
-            print(v, solver.getVal(v))
-
-
-
-def example():
+def example2():
     p0 = Atomic("p0")
     p1 = Atomic("p1")
 
@@ -75,11 +50,13 @@ def example():
     print(bvars)
 
     print('Solution:')
-    solve(problem)
+    print(solver.solve_mixed_problem(problem))
+
+
 
 
 def main():
-    example()
+    example1()
 
 if __name__ == '__main__':
     main()
