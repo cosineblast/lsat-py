@@ -7,7 +7,18 @@ Este projeto é um pequeno estudo no desenvolvimento do problema de satisfabilid
 Ele utiiza um resolvedor de problemas de otimização inteira do google para
 estas lógicas.
 
-## Intuição
+## Executando o Projeto
+
+Você precisará do projeto `scip` versão 0.9.1 para executar este projeto.
+
+Utilize um `venv` python da seguinte forma:
+
+```
+python3 -m venv env
+pip install -r requirements.txt
+```
+
+## Intuição das traduções
 
 Para traduzir valorações da lógica L para um conjunto de inequações lineares mistas,
 precisamos realizar transformações nas valorações das operações desta lógica:

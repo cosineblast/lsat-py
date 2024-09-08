@@ -3,51 +3,52 @@ from rich import print
 
 from the_types import *
 
-from constraint_builder import build_constraints, MixedProblem
+from constraint_builder import MixedProblem, build_constraints
 
-from ortools.linear_solver import pywraplp
+from pyscipopt import Model
+
+import test_util
 
 def solve(problem: MixedProblem):
-    solver = pywraplp.Solver.CreateSolver("GLOP")
+    solver = Model('Example')
 
-    if not solver:
-        raise ValueError('Linear solver not found')
-
-    inf = solver.infinity()
+    solver.hideOutput()
 
     solver_vars = dict()
 
-    for variable in problem.float_variables:
-        solver_vars[variable] = solver.NumVar(0.0, 1.0, variable)
+    for name in problem.float_variables:
+        variable = solver.addVar(name)
+        solver_vars[name] = variable
+        solver.addCons(0.0 <= variable)
+        solver.addCons(variable <= 1.0)
 
-    for variable in problem.binary_variables:
-        solver_vars[variable] = solver.NumVar(0.0, 1.0, variable)
+    for name in problem.binary_variables:
+        solver_vars[name] = solver.addVar(name, vtype='B')
+
 
     for relation, variables, values, constant in problem.constraints:
-        constraint = None
 
-        match relation:
-            case 'eq': constraint = solver.RowConstraint(constant, constant, '')
-            case 'le': constraint = solver.RowConstraint(-inf, constant, '')
-            case 'ge': constraint = solver.RowConstraint(constant, inf, '')
+        left_side = 0
 
         for variable, value in zip(variables, values):
-            constraint.SetCoefficient(solver_vars[variable], value)
+            left_side = (solver_vars[variable] * value) + left_side
 
-    objective = solver.Objective()
-    objective.SetMaximization()
+        match relation:
+            case 'eq': constraint = left_side == constant
+            case 'le': constraint = left_side <= constant
+            case 'ge': constraint = left_side >= constant
 
-    status = solver.Solve()
+        solver.addCons(constraint)
 
-    print('(solution status code: {})'.format(status))
+    solver.optimize()
 
-    if status == pywraplp.Solver.OPTIMAL:
-        for variable in problem.float_variables | problem.binary_variables:
-            print(variable, solver_vars[variable].solution_value())
-    elif status == pywraplp.Solver.INFEASIBLE:
-        print('NOSAT :(')
-    else:
-        raise Error('Some unexpected result happend, status={}'.format(status))
+    print('status:', solver.getStatus())
+
+    if solver.getStatus() == 'optimal':
+        for v in solver.getVars():
+            print(v, solver.getVal(v))
+
+
 
 def main():
     p0 = Atomic("p0")
@@ -55,6 +56,7 @@ def main():
 
     things: list[FormulaConstraint] = [
         ("le", Min(p0, p1), 0.3),
+        ("ge", Max(p0, p1), 0.6),
         ("eq", p0, 0.7),
         ("eq", p1, 0.1),
     ]
@@ -74,6 +76,7 @@ def main():
 
     print('Solution:')
     solve(problem)
+
 
 if __name__ == '__main__':
     main()

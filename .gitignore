@@ -3,3 +3,4 @@ venv
 *.bin
 *.out
 .mypy_cache
+env

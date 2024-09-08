@@ -18,6 +18,7 @@
               p.rich
               p.ortools
               p.mypy
+              # p.pyscipopt
             ]))
             pkgs.black
             pkgs.mypy
