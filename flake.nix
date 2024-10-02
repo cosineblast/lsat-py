@@ -4,6 +4,12 @@
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+
+    scipopt-nix = {
+      url = "github:Lichthagel/scipopt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs@{ flake-parts, ... }:
@@ -18,6 +24,7 @@
               p.rich
               p.ortools
               p.mypy
+              p.parsy
               # p.pyscipopt
             ]))
             pkgs.black
