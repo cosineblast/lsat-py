@@ -60,12 +60,7 @@ def solve_mixed_problem(problem: MixedProblem) -> Optional[dict[str, float]]:
 
     solver.optimize()
 
-    print('status:', solver.getStatus())
-
     if solver.getStatus() == 'optimal':
-        for v in solver.getVars():
-            print(v, solver.getVal(v))
-
         result = {}
 
         for name, variable in solver_vars.items():

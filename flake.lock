@@ -49,7 +49,28 @@
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "scipopt-nix": "scipopt-nix"
+      }
+    },
+    "scipopt-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1726131561,
+        "narHash": "sha256-XIRlPSPVwX6APr89XyyHHM3qjkLFWaELYkoWCQR5+28=",
+        "owner": "Lichthagel",
+        "repo": "scipopt-nix",
+        "rev": "1dbdb70d6e6a40e38a9280fb06b469525a1cc76f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Lichthagel",
+        "repo": "scipopt-nix",
+        "type": "github"
       }
     }
   },

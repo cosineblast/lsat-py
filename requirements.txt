@@ -1,5 +1,8 @@
+fire==0.7.0
 markdown-it-py==3.0.0
 mdurl==0.1.2
+parsy==2.1
 Pygments==2.18.0
 PySCIPOpt==5.1.1
 rich==13.8.0
+termcolor==2.4.0

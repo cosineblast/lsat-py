@@ -1,5 +1,4 @@
 
-from rich import print
 
 from the_types import *
 
@@ -10,53 +9,47 @@ import test_util
 
 import solver
 
-def example1():
+import fire
 
-    p0 = Atomic("p0")
-    p1 = Atomic("p1")
+import parser
 
-    things: list[FormulaConstraint] = [
-        ("le", Min(p0, p1), 0.3),
-        ("ge", Max(p0, p1), 0.6),
-        ("eq", p0, 0.7),
-        ("eq", p1, 0.1),
-    ]
+from rich import print
 
-    print(solver.solve_formula_constraints(things))
-    
+def run(target, verbose=False):
 
-def example2():
-    p0 = Atomic("p0")
-    p1 = Atomic("p1")
+    stuff = None
+    with open(target) as file:
+        stuff = file.read()
 
-    things: list[FormulaConstraint] = [
-        ("le", Min(p0, p1), 0.3),
-        ("ge", Max(p0, p1), 0.6),
-        ("eq", p0, 0.7),
-        ("eq", p1, 0.1),
-    ]
+    parsed = parser.equations.parse(stuff)
 
-    problem =  build_constraints(things)
+    problem =  build_constraints(parsed)
+
     constraints, fvars, bvars = problem
 
+    if verbose:
+        print('Constraints:')
+        print(constraints)
 
-    print('Constraints:')
-    print(constraints)
+        print('Float Vars:')
+        print(fvars)
 
-    print('Float Vars:')
-    print(fvars)
+        print('Binary Vars:')
+        print(bvars)
 
-    print('Binary Vars:')
-    print(bvars)
+        print('Solution:')
 
-    print('Solution:')
-    print(solver.solve_mixed_problem(problem))
+    solution = solver.solve_mixed_problem(problem)
 
+    if solution is not None:
+        atomics = {k[2:]:solution[k] for k in solution if k.startswith('a_')}
 
-
+        print(atomics)
+    else:
+        print('null')
 
 def main():
-    example1()
+    fire.Fire(run)
 
 if __name__ == '__main__':
     main()

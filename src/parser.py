@@ -4,7 +4,7 @@ from the_types import *
 import parsy as p
 
 
-_ws = p.regex("\s*")
+_ws = p.regex("\\s*")
 token_string = lambda s: p.string(s) << _ws
 token_regex = lambda r: p.regex(r) << _ws
 
@@ -33,7 +33,7 @@ _max = binary_function("max", Max)
 
 _conj = binary_function("conj", Conjunction)
 
-_disj = binary_function("disj", Conjunction)
+_disj = binary_function("disj", Disjunction)
 
 @p.generate
 def _negation():
@@ -51,12 +51,12 @@ _relation = token_string("==").result('eq') | token_string("<=").result('le') | 
 
 _equation = p.seq(_formula, _relation, _constant).combine(lambda f,r,c: (r,f,c))
 
-_equations = _equation.sep_by(token_string(";"))
+equations = _ws >> _equation.sep_by(token_string(";"))
 
 if __name__ == '__main__':
     import sys
     arg = sys.argv[1]
-    print(_equations.parse(arg))
+    print(equations.parse(arg))
 
 
 

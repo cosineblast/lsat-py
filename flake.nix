@@ -25,6 +25,7 @@
               p.ortools
               p.mypy
               p.parsy
+              p.fire
               # p.pyscipopt
             ]))
             pkgs.black
