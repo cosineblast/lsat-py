@@ -35,6 +35,8 @@ _conj = binary_function("conj", Conjunction)
 
 _disj = binary_function("disj", Disjunction)
 
+_imply = binary_function("implies", Implication)
+
 @p.generate
 def _negation():
     yield token_string("not") 
@@ -45,7 +47,7 @@ def _negation():
 
 _paren = token_string("(") >> (_formula << token_string(")"))
 
-_formula.become(_min | _max | _conj | _disj | _paren | _negation | _atom)
+_formula.become(_min | _max | _conj | _disj | _imply | _paren | _negation | _atom)
 
 _relation = token_string("==").result('eq') | token_string("<=").result('le') | token_string(">=").result('ge')
 
